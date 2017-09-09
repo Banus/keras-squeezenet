@@ -1,3 +1,4 @@
+import keras
 import keras.backend as K
 
 from keras.models import Model
@@ -31,11 +32,18 @@ def SqueezeNet(include_top=True, weights="imagenet", input_tensor=None, input_sh
         raise ValueError('If using `weights` as imagenet with `include_top`'
                          ' as true, `classes` should be 1000')
     # Determine proper input shape
-    input_shape = _obtain_input_shape(input_shape,
-                                      default_size=224,
-                                      min_size=48,
-                                      data_format=K.image_data_format(),
-                                      include_top=include_top)
+    if keras.__version__ >= '2.0.8':
+        input_shape = _obtain_input_shape(input_shape,
+                                          default_size=224,
+                                          min_size=48,
+                                          data_format=K.image_data_format(),
+                                          require_flatten=include_top)
+    else:
+       input_shape = _obtain_input_shape(input_shape,
+                                         default_size=224,
+                                         min_size=48,
+                                         data_format=K.image_data_format(),
+                                         include_top=include_top) 
 
     if input_tensor is None:
         img_input = Input(shape=input_shape)
